@@ -1,0 +1,47 @@
+#!/bin/sh
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+install_node () {
+  echo "Installing Node..."
+  cd $BUILD_DIR
+  mkdir $BUILD_DIR/node
+  wget -q --progress=bar https://nodejs.org/download/release/v0.10.44/node-v0.10.44-linux-x64.tar.gz
+  tar zxf node-v0.10.44-linux-x64.tar.gz -C node/ --strip-components=1
+  export PATH=$PATH:$BUILD_DIR/node/bin
+}
+
+install_meteor () {
+  echo "Installing Meteor..."
+  cd $CACHE_DIR
+  curl https://install.meteor.com/ | sh
+  export PATH=$PATH:$HOME/.meteor
+}
+
+install_app_dependencies () {
+  echo "Installing app npm dependencies..."
+  cd $BUILD_DIR
+  npm install
+}
+
+build_app () {
+  echo "Building Meteor app..."
+  cd $BUILD_DIR
+  meteor build $CACHE_DIR/build --directory
+  mv $CACHE_DIR/build/bundle $BUILD_DIR/build
+}
+
+install_server_dependencies () {
+  echo "Installing server dependencies..."
+  cd $BUILD_DIR/build/programs/server
+  npm install
+}
+
+echo "Starting install..."
+install_node
+install_meteor
+install_app_dependencies
+build_app
+install_server_dependencies
+echo "Done compile"

@@ -1,0 +1,8 @@
+#!/bin/sh
+#BUILD_DIR=$1
+
+cat <<EOF
+config_vars:
+default_process_types:
+  web: node/bin/node build/main.js
+EOF
